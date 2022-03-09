@@ -10,5 +10,8 @@
         "type-check": "tsc --build",
         "lint": "eslint '**/*.{ts,tsx,js}'",
         "test:unit": "jest"
+    },
+    "dependencies": {
+        "socks-proxy-agent": "6.1.1"
     }
 }
