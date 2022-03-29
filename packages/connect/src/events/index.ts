@@ -1,0 +1,15 @@
+import { UI_REQUEST } from './ui-request';
+import { UI_RESPONSE } from './ui-response';
+
+export * from './blockchain';
+export * from './core';
+export * from './device';
+export * from './transport';
+export * from './ui-request';
+export * from './ui-response';
+
+// NOTE: for backward compatibility wrap ui const into one
+export const UI = {
+    ...UI_REQUEST,
+    ...UI_RESPONSE,
+} as const;
