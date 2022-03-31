@@ -105,8 +105,9 @@ module.exports = config => {
                     process: 'process/browser',
                 }),
                 // replace TrezorConnect module used in ./tests/common.setup.js
+                // use inline build from @trezor/connect-web
                 new webpack.NormalModuleReplacementPlugin(
-                    /src\/js\/index$/,
+                    /^trezor-connect$/,
                     path.join(__dirname, 'build/trezor-connect'),
                 ),
                 // replace ws module used in ./tests/websocket-client.js
