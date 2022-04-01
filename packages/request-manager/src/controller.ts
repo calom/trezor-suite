@@ -2,7 +2,7 @@ import * as http from 'http';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import { EventEmitter } from 'events';
 
-import fetch from 'node-fetch';
+import { TorControlPort } from './torControlPort';
 
 interface TorConnectionOptions {
     host: string;
@@ -14,17 +14,26 @@ interface ConnectArgs {
     identity?: string;
 }
 
-export const DEFAULT_TOR_ADDRESS = '127.0.0.1:9050';
 
+const DEFAULT_TOR_HOST = '127.0.0.1';
+const DEFAULT_TOR_PORT = 38121;
+export const DEFAULT_TOR_ADDRESS = `${DEFAULT_TOR_HOST}:${DEFAULT_TOR_PORT}`;
+
+
+// TODO: if we endup using this, it should be moved to utils package.
+export const timeoutPromise = (timeout: number) =>
+  new Promise(resolve => setTimeout(resolve, timeout));
 
 export class TorController extends EventEmitter {
 
     options: TorConnectionOptions;
     identities: { [key: string]: SocksProxyAgent };
+    controlPort: TorControlPort;
 
     constructor(options: TorConnectionOptions) {
         super();
         this.options = options;
+        this.controlPort = new TorControlPort();
         this.identities = {
             default: new SocksProxyAgent({
                 host: this.options.host,
@@ -73,9 +82,41 @@ export class TorController extends EventEmitter {
         });
     }
 
-    status() {
-        // TODO: this is just checking that the PORT 9050 is running in our machine
-        // it could be other process, it doesn't have to be TOR
-        return fetch(`http://${DEFAULT_TOR_ADDRESS}/`);
+    async waitUntilAlive() {
+        console.log('waitUntilAlive');
+        await (async () => {
+            const waitUntilResponse = async () => {
+                try {
+                    const info = await this.controlPort.getInfo();
+                    console.log('info', info);
+                    if (info === true) {
+                        // It is running so let's not wait more.
+                    } else {
+                        await timeoutPromise(500);
+                        await waitUntilResponse();
+                    }
+                } catch (error) {
+                    console.log('error in waitUntilResponse', error);
+                    await timeoutPromise(5 * 1000);
+                    await waitUntilResponse();
+
+                }
+            }
+            await waitUntilResponse();
+        })();
+    }
+
+    async status() {
+        try {
+            const isTorRunning = await this.controlPort.getInfo();
+            return {
+                isRunning: isTorRunning,
+            }
+
+        } catch (error) {
+            return {
+                isRunning: false
+            }
+        }
     }
 }

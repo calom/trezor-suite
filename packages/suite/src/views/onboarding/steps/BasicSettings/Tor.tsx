@@ -37,6 +37,8 @@ interface Props {
     tor: boolean;
 }
 
+// TODO: do we still need this if we use custom TOR?
+
 const Tor = ({ tor }: Props) => {
     const { toggleTor } = useActions({
         toggleTor: toggleTorAction,

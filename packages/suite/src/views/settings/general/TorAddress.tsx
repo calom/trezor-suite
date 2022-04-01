@@ -8,7 +8,8 @@ import { SettingsAnchor } from '@suite-constants/anchors';
 
 // Default address of the bundled tor process.
 // Keep in sync with DEFAULT_ADDRESS in suite-desktop's TorProcess.
-const DEFAULT_ADDRESS = '127.0.0.1:9050';
+const DEFAULT_ADDRESS = '127.0.0.1:38121';
+//TODO: do we still need this?
 
 export const TorAddress = () => {
     const [torAddress, setTorAddress] = useState<string>('');

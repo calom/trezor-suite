@@ -29,10 +29,11 @@ export const getThemeSettings = () => store.get('themeSettings', 'system');
 export const setThemeSettings = (themeSettings: SuiteThemeVariant) =>
     store.set('themeSettings', themeSettings);
 
+// TODO: do we still need this?
 export const getTorSettings = () =>
     store.get('torSettings', {
         running: false,
-        address: '127.0.0.1:9050',
+        address: '127.0.0.1:38121',
     });
 
 export const setTorSettings = (torSettings: TorSettings) => store.set('torSettings', torSettings);

@@ -2,10 +2,14 @@
  * Tor feature (toggle, configure)
  */
 import { session } from 'electron';
-import TorProcess, { DEFAULT_ADDRESS } from '../libs/processes/TorProcess';
+import TorProcess from '../libs/processes/TorProcess';
 import { onionDomain } from '../config';
 import { app, ipcMain } from '../typed-electron';
 import { Module } from './index';
+
+const TOR_SUITE_PORT = 38121;
+const TOR_SUITE_HOST = '127.0.0.1';
+export const TOR_SUITE_ADDRESS = `${TOR_SUITE_HOST}:${TOR_SUITE_PORT}`;
 
 const init: Module = async ({ mainWindow, store, interceptor }) => {
     const { logger } = global;
@@ -29,20 +33,23 @@ const init: Module = async ({ mainWindow, store, interceptor }) => {
     };
 
     const setupTor = async (settings: TorSettings) => {
+        console.log('setupTor');
         // Start (or stop) the bundled tor only if address is the default one.
         // Otherwise the user must run the process themselves.
-        const shouldRunBundledTor = settings.running && settings.address === DEFAULT_ADDRESS;
-        if (shouldRunBundledTor !== (await tor.status()).process) {
-            if (shouldRunBundledTor === true) {
-                await tor.start();
-            } else {
-                await tor.stop();
-            }
+        const shouldRunTor = settings.running;
+        console.log('settings TOR', settings);
+        const torStatus = await tor.status();
+        console.log('torStatus', torStatus);
+        if (shouldRunTor && !torStatus.service) {
+            await tor.start();
+        } else {
+            await tor.stop();
         }
 
         // Start (or stop) routing all communication through tor.
         if (settings.running) {
-            setProxy(`socks5://${settings.address}`);
+            // setProxy(`socks5://${settings.address}`);
+            setProxy(`socks5://${TOR_SUITE_ADDRESS}`);
         } else {
             setProxy('');
         }

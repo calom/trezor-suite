@@ -2,3 +2,14 @@ AvoidDiskWrites 1
 Log notice stdout
 CookieAuthentication 1
 DormantCanceledByStartup 1
+
+SocksPort 38121
+
+## The port on which Tor will listen for local connections from Tor
+## controller applications, as documented in control-spec.txt.
+ControlPort 38122
+CookieAuthentication 0
+
+## TODO: authentication methods, to prevent attackers from accessing it.
+#HashedControlPassword
+#CookieAuthentication 1
