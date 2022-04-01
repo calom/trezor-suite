@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { LayoutContext } from '@suite-components';
 import { SettingsMenu } from '@settings-components';
@@ -9,6 +9,7 @@ const Wrapper = styled.div`
     flex: 1;
     flex-direction: column;
     max-width: ${variables.SCREEN_SIZE.MD};
+    margin-top: 8px;
 `;
 
 type Props = {
@@ -21,7 +22,7 @@ type Props = {
 const SettingsLayout = (props: Props) => {
     const { setLayout } = React.useContext(LayoutContext);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (setLayout) setLayout(props.title || 'Settings', null, <SettingsMenu />);
     }, [props.title, setLayout]);
 

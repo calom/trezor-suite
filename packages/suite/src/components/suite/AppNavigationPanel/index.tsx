@@ -8,8 +8,7 @@ const Wrapper = styled.div`
     width: 100%;
     justify-content: center;
     background: ${props => props.theme.BG_LIGHT_GREY};
-    padding: 24px 32px 0px 32px;
-
+    padding: 24px 32px 10px 32px;
     z-index: 4;
 
     @media screen and (max-width: ${variables.SCREEN_SIZE.LG}) {
@@ -17,7 +16,7 @@ const Wrapper = styled.div`
     }
 `;
 
-const Content = styled.div<Pick<Props, 'maxWidth'>>`
+const Content = styled.div<Pick<AppNavigationPanelProps, 'maxWidth'>>`
     display: flex;
     width: 100%;
     max-width: ${props => (props.maxWidth === 'default' ? MAX_WIDTH : MAX_WIDTH_WALLET_CONTENT)};
@@ -27,7 +26,6 @@ const Content = styled.div<Pick<Props, 'maxWidth'>>`
 const BasicInfo = styled.div`
     display: flex;
     flex-direction: column;
-    padding-bottom: 20px;
 `;
 
 const Title = styled(H1)`
@@ -58,15 +56,22 @@ const TitleRow = styled(Row)`
 
 const Delimeter = styled.div``;
 
-interface Props {
+interface AppNavigationPanelProps {
     title: React.ReactNode;
     titleContent?: (isAppNavigationPanelInView: boolean) => React.ReactNode | undefined;
     maxWidth: 'small' | 'default';
-    children?: React.ReactNode;
     navigation?: React.ReactNode;
+    className?: string;
 }
 
-const AppNavigationPanel = (props: Props) => {
+export const AppNavigationPanel: React.FC<AppNavigationPanelProps> = ({
+    title,
+    titleContent,
+    maxWidth,
+    navigation,
+    className,
+    children,
+}) => {
     const ref = useRef<HTMLDivElement | null>(null);
     const [inView, setInView] = useState(false);
 
@@ -89,24 +94,21 @@ const AppNavigationPanel = (props: Props) => {
 
     return (
         <>
-            <Wrapper ref={ref}>
-                <Content maxWidth={props.maxWidth}>
+            <Wrapper ref={ref} className={className}>
+                <Content maxWidth={maxWidth}>
                     <BasicInfo>
                         <TitleRow>
-                            <Title noMargin>{props.title}</Title>
+                            <Title noMargin>{title}</Title>
                             <Aside data-test="@app/navigation/aside">
-                                {props.titleContent?.(inView)}
+                                {titleContent?.(inView)}
                             </Aside>
                         </TitleRow>
-                        {props.children && <Row>{props.children}</Row>}
+                        {children && <Row>{children}</Row>}
                     </BasicInfo>
                 </Content>
             </Wrapper>
-            {React.isValidElement(props.navigation) &&
-                React.cloneElement(props.navigation, { inView })}
+            {React.isValidElement(navigation) && React.cloneElement(navigation, { inView })}
             <Delimeter />
         </>
     );
 };
-
-export default AppNavigationPanel;

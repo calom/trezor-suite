@@ -3,8 +3,8 @@ import styled, { css } from 'styled-components';
 import { useTheme, Icon, IconProps, variables, HoverAnimation } from '@trezor/components';
 
 const Wrapper = styled.div<Pick<Props, 'isOpen' | 'marginLeft'>>`
-    width: 45px;
-    height: 45px;
+    width: 44px;
+    height: 44px;
     display: flex;
     position: relative;
     cursor: pointer;
@@ -50,8 +50,8 @@ const Label = styled.span`
 
 const AlertDotWrapper = styled.div`
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 9px;
+    right: 10px;
     width: 9px;
     height: 9px;
     border-radius: 50%;
@@ -77,8 +77,8 @@ const Indicator = styled.div`
     width: 10px;
     border-radius: 50%;
     position: absolute;
-    top: 0px;
-    right: -1px;
+    top: 9px;
+    right: 10px;
 `;
 
 interface CommonProps extends Pick<React.HTMLAttributes<HTMLDivElement>, 'onClick'> {
@@ -103,7 +103,7 @@ type Props = CustomIconComponentProps | IconComponentProps;
 
 // Reason to use forwardRef: We want the user to be able to close Notifications dropdown by clicking somewhere else.
 // In order to achieve that behavior, we need to pass reference to ActionItem
-const ActionItem = React.forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) => {
+export const ActionItem = React.forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) => {
     const theme = useTheme();
     const iconComponent = props.icon ? (
         <Icon
@@ -137,8 +137,8 @@ const ActionItem = React.forwardRef((props: Props, ref: React.Ref<HTMLDivElement
     }
 
     return (
-        <Wrapper isActive={props.isActive} isOpen={props.isOpen} {...props} ref={ref}>
-            <HoverAnimation isHoverable={!props.isOpen}>
+        <HoverAnimation isHoverable={!props.isOpen}>
+            <Wrapper isActive={props.isActive} isOpen={props.isOpen} {...props} ref={ref}>
                 {iconComponent}
                 {props.indicator === 'alert' && (
                     <AlertDotWrapper>
@@ -150,8 +150,7 @@ const ActionItem = React.forwardRef((props: Props, ref: React.Ref<HTMLDivElement
                         <Icon icon="CHECK" size={10} color={theme.TYPE_GREEN} />
                     </Indicator>
                 )}
-            </HoverAnimation>
-        </Wrapper>
+            </Wrapper>
+        </HoverAnimation>
     );
 });
-export default ActionItem;

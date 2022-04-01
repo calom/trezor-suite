@@ -17,7 +17,7 @@ import { UseSendFormProps } from '@wallet-types/sendForm';
 const StyledCard = styled(Card)`
     display: flex;
     flex-direction: column;
-    margin-bottom: 25px;
+    margin-bottom: 8px;
     padding: 0;
 `;
 

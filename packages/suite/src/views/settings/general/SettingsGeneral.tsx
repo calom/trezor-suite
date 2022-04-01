@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { SettingsLayout } from '@settings-components';
-import { Section } from '@suite-components/Settings';
+import { SettingsSection } from '@suite-components/Settings';
 import { Translation } from '@suite-components';
 import { useSelector } from '@suite-hooks';
 import { isDesktop, isWeb } from '@suite-utils/env';
@@ -29,37 +29,37 @@ const SettingsGeneral = () => {
 
     return (
         <SettingsLayout data-test="@settings/index">
-            <Section title={<Translation id="TR_LOCALIZATION" />}>
+            <SettingsSection title={<Translation id="TR_LOCALIZATION" />}>
                 <Language />
                 <Fiat />
-            </Section>
+            </SettingsSection>
 
-            <Section title={<Translation id="TR_LABELING" />}>
+            <SettingsSection title={<Translation id="TR_LABELING" />}>
                 <Labeling />
                 <LabelingDisconnect />
                 <LabelingConnect />
-            </Section>
+            </SettingsSection>
 
             {(isDesktop() || (isWeb() && tor)) && (
-                <Section title={<Translation id="TR_TOR" />}>
+                <SettingsSection title={<Translation id="TR_TOR" />}>
                     {isDesktop() && <Tor />}
                     {isDesktop() && <TorAddress />}
                     {tor && <TorOnionLinks />}
-                </Section>
+                </SettingsSection>
             )}
 
-            <Section title={<Translation id="TR_APPLICATION" />}>
+            <SettingsSection title={<Translation id="TR_APPLICATION" />}>
                 <Theme />
                 <Analytics />
                 <ShowLog />
                 <ClearStorage />
                 <VersionWithUpdate />
-            </Section>
+            </SettingsSection>
 
             {desktopUpdate.enabled && (
-                <Section title={<Translation id="TR_EXPERIMENTAL_FEATURES" />}>
+                <SettingsSection title={<Translation id="TR_EXPERIMENTAL_FEATURES" />}>
                     <EarlyAccess />
-                </Section>
+                </SettingsSection>
             )}
         </SettingsLayout>
     );

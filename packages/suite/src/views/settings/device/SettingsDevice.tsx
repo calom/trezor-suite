@@ -4,7 +4,7 @@ import type { TransportInfo } from 'trezor-connect';
 
 import { SettingsLayout } from '@settings-components';
 import { Translation } from '@suite-components';
-import { Section, DeviceBanner } from '@suite-components/Settings';
+import { SettingsSection, DeviceBanner } from '@suite-components/Settings';
 import { getDeviceModel, isDeviceRemembered } from '@suite-utils/device';
 import { useDevice, useSelector } from '@suite-hooks';
 
@@ -100,7 +100,7 @@ const SettingsDevice = () => {
             )}
 
             {!bootloaderMode && (
-                <Section title={<Translation id="TR_BACKUP" />}>
+                <SettingsSection title={<Translation id="TR_BACKUP" />}>
                     {unfinishedBackup ? (
                         <BackupFailed />
                     ) : (
@@ -109,10 +109,10 @@ const SettingsDevice = () => {
                             <CheckRecoverySeed isDeviceLocked={isDeviceLocked} />
                         </>
                     )}
-                </Section>
+                </SettingsSection>
             )}
 
-            <Section title={<Translation id="TR_DEVICE_SECURITY" />}>
+            <SettingsSection title={<Translation id="TR_DEVICE_SECURITY" />}>
                 <FirmwareVersion isDeviceLocked={isDeviceLocked} />
 
                 {!bootloaderMode && (
@@ -123,19 +123,19 @@ const SettingsDevice = () => {
                         {safetyChecks && <SafetyChecks isDeviceLocked={isDeviceLocked} />}
                     </>
                 )}
-            </Section>
+            </SettingsSection>
             {!bootloaderMode && (
-                <Section title={<Translation id="TR_PERSONALIZATION" />}>
+                <SettingsSection title={<Translation id="TR_PERSONALIZATION" />}>
                     <DeviceLabel isDeviceLocked={isDeviceLocked} />
                     <Homescreen isDeviceLocked={isDeviceLocked} />
                     {deviceModel === 'T' && <DisplayRotation isDeviceLocked={isDeviceLocked} />}
                     {pinProtection && <AutoLock isDeviceLocked={isDeviceLocked} />}
-                </Section>
+                </SettingsSection>
             )}
-            <Section title={<Translation id="TR_ADVANCED" />}>
+            <SettingsSection title={<Translation id="TR_ADVANCED" />}>
                 <WipeDevice isDeviceLocked={isDeviceLocked} />
                 <CustomFirmware isDeviceLocked={isDeviceLocked} />
-            </Section>
+            </SettingsSection>
         </SettingsLayout>
     );
 };

@@ -43,16 +43,13 @@ const Content = styled.div`
 `;
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-    children: React.ReactNode;
     shouldHighlight?: boolean;
 }
 
-const SectionItem = React.forwardRef(
-    ({ children, shouldHighlight, ...rest }: Props, ref?: React.Ref<HTMLDivElement>) => (
+export const SectionItem = React.forwardRef<HTMLDivElement, Props>(
+    ({ children, shouldHighlight, ...rest }, ref) => (
         <Wrapper ref={ref} shouldHighlight={shouldHighlight} {...rest}>
             <Content>{children}</Content>
         </Wrapper>
     ),
 );
-
-export default SectionItem;

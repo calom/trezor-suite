@@ -1,12 +1,13 @@
 import React from 'react';
-import { findRouteByName } from '@suite-utils/router';
+import { transparentize } from 'polished';
 import styled, { css } from 'styled-components';
+
+import { findRouteByName } from '@suite-utils/router';
 import { variables, HoverAnimation } from '@trezor/components';
 import { Translation } from '@suite-components';
 import { MAIN_MENU_ITEMS } from '@suite-constants/menu';
 import { useAnalytics, useActions, useSelector, useAccountSearch } from '@suite-hooks';
 import * as routerActions from '@suite-actions/routerActions';
-import { transparentize } from 'polished';
 
 interface ComponentProps {
     isActive: boolean;
@@ -17,6 +18,7 @@ const Wrapper = styled.div`
     display: flex;
     flex: 1;
     justify-content: center;
+    height: 100%;
 `;
 
 const MobileWrapper = styled.div`
@@ -24,31 +26,30 @@ const MobileWrapper = styled.div`
     flex-direction: column;
     padding: 0px 16px;
     flex: 1;
+    border-bottom: 1px solid ${({ theme }) => theme.STROKE_GREY};
+`;
 
-    border-bottom: 1px solid ${props => props.theme.STROKE_GREY};
+const StyledHoverAnimation = styled(HoverAnimation)`
+    & + & {
+        margin-left: 12px;
+    }
 `;
 
 const MenuItem = styled.div<ComponentProps>`
     display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 12px;
     font-size: 16px;
-    cursor: ${props => (!props.isDisabled && !props.isActive ? 'pointer' : 'default')};
-
-    & + & {
-        margin-left: 36px;
-    }
+    cursor: ${({ isDisabled, isActive }) => (!isDisabled && !isActive ? 'pointer' : 'default')};
 `;
 
 const MobileMenuItem = styled.div<ComponentProps>`
     display: flex;
     padding: 20px 24px;
-    font-size: ${props => (props.isActive ? '20px' : '16px')};
-    cursor: ${props => (!props.isDisabled && !props.isActive ? 'pointer' : 'default')};
-
-    ${props =>
-        props.isActive &&
-        css`
-            font-weight: ${variables.FONT_WEIGHT.DEMI_BOLD};
-        `}
+    font-size: ${({ isActive }) => (isActive ? '20px' : '16px')};
+    font-weight: ${({ isActive }) => isActive && variables.FONT_WEIGHT.DEMI_BOLD};
+    cursor: ${({ isDisabled, isActive }) => (!isDisabled && !isActive ? 'pointer' : 'default')};
 
     & + & {
         border-top: 1px solid ${props => props.theme.STROKE_GREY};
@@ -65,15 +66,15 @@ const ItemTitle = styled.span<ComponentProps>`
     font-size: ${variables.FONT_SIZE.NORMAL};
     line-height: 24px;
 
-    ${props =>
-        props.isActive &&
+    ${({ isActive }) =>
+        isActive &&
         css`
-            color: ${props => props.theme.TYPE_DARK_GREY};
+            color: ${({ theme }) => theme.TYPE_DARK_GREY};
             font-size: ${variables.FONT_SIZE.H3};
         `}
 
-    ${props =>
-        props.isDisabled &&
+    ${({ isDisabled }) =>
+        isDisabled &&
         css`
             cursor: default;
         `}
@@ -96,18 +97,22 @@ const NewBadge = styled.span`
     border-radius: 4px;
 `;
 
-interface Props {
+interface MainNavigationProps {
     closeMainNavigation?: () => void;
     isMobileLayout?: boolean;
 }
 
-const MainNavigation = (props: Props) => {
-    const analytics = useAnalytics();
-    const { setCoinFilter, setSearchString } = useAccountSearch();
+export const MainNavigation: React.FC<MainNavigationProps> = ({
+    isMobileLayout,
+    closeMainNavigation,
+}) => {
     const activeApp = useSelector(state => state.router.app);
     const { goto } = useActions({
         goto: routerActions.goto,
     });
+
+    const analytics = useAnalytics();
+    const { setCoinFilter, setSearchString } = useAccountSearch();
 
     const gotoWithReport = (routeName: typeof MAIN_MENU_ITEMS[number]['route']) => {
         switch (routeName) {
@@ -125,8 +130,8 @@ const MainNavigation = (props: Props) => {
         goto(routeName);
     };
 
-    const WrapperComponent = props.isMobileLayout ? MobileWrapper : Wrapper;
-    const MenuItemComponent = props.isMobileLayout ? MobileMenuItem : MenuItem;
+    const WrapperComponent = isMobileLayout ? MobileWrapper : Wrapper;
+    const MenuItemComponent = isMobileLayout ? MobileMenuItem : MenuItem;
 
     return (
         <WrapperComponent>
@@ -135,34 +140,29 @@ const MainNavigation = (props: Props) => {
                 const routeObj = findRouteByName(route);
                 const isActive = routeObj ? routeObj.app === activeApp : false;
                 return (
-                    <MenuItemComponent
-                        key={route}
-                        data-test={`@suite/menu/${route}`}
-                        onClick={() => {
-                            if (!isDisabled) {
-                                gotoWithReport(route);
-                                if (props.closeMainNavigation) {
-                                    props.closeMainNavigation();
+                    <StyledHoverAnimation isHoverable={!isActive} key={route}>
+                        <MenuItemComponent
+                            data-test={`@suite/menu/${route}`}
+                            onClick={() => {
+                                if (!isDisabled) {
+                                    gotoWithReport(route);
+                                    closeMainNavigation?.();
                                 }
-                            }
-                        }}
-                        isActive={isActive}
-                        isDisabled={isDisabled}
-                    >
-                        <ItemTitleWrapper>
-                            <HoverAnimation isHoverable={!isActive}>
+                            }}
+                            isActive={isActive}
+                            isDisabled={isDisabled}
+                        >
+                            <ItemTitleWrapper>
                                 <ItemTitle isActive={isActive} isDisabled={isDisabled}>
                                     <Translation id={translationId} />
                                 </ItemTitle>
-                            </HoverAnimation>
-                            {/* if the button is disabled, display "SOON" badge */}
-                            {isDisabled && <NewBadge>soon</NewBadge>}
-                        </ItemTitleWrapper>
-                    </MenuItemComponent>
+                                {/* if the button is disabled, display "SOON" badge */}
+                                {isDisabled && <NewBadge>soon</NewBadge>}
+                            </ItemTitleWrapper>
+                        </MenuItemComponent>
+                    </StyledHoverAnimation>
                 );
             })}
         </WrapperComponent>
     );
 };
-
-export default MainNavigation;

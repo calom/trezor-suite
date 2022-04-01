@@ -40,7 +40,12 @@ const Title = styled.div`
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
 `;
 
-const TextColumn = ({ title, description, buttonLink, buttonTitle }: TextColumnProps) => (
+export const TextColumn: React.FC<TextColumnProps> = ({
+    title,
+    description,
+    buttonLink,
+    buttonTitle,
+}) => (
     <Wrapper>
         {title && <Title>{title}</Title>}
         {description && <Description>{description}</Description>}
@@ -53,5 +58,3 @@ const TextColumn = ({ title, description, buttonLink, buttonTitle }: TextColumnP
         )}
     </Wrapper>
 );
-
-export default TextColumn;

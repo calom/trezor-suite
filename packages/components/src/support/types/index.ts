@@ -12,8 +12,6 @@ export type ButtonSize = 'small' | 'large';
 
 export type InputState = 'success' | 'warning' | 'error';
 
-export type InputVariant = 'small' | 'medium' | 'large';
-
 export interface InputButton {
     icon?: IconType;
     text?: ReactNode;

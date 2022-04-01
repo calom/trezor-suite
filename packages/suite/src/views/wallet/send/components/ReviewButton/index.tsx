@@ -8,7 +8,7 @@ import { Translation } from '@suite-components/Translation';
 const Wrapper = styled.div`
     display: flex;
     justify-content: center;
-    margin: 25px 0;
+    margin: 32px 0;
     flex-direction: column;
 `;
 

@@ -11,7 +11,7 @@ import { FADE_IN } from '@trezor/components/src/config/animations';
 const CloseButtonWrapper = styled.div<{ isAppNavigationPanelInView?: boolean }>`
     position: absolute;
     right: 0;
-    top: ${({ isAppNavigationPanelInView }) => (isAppNavigationPanelInView ? 0 : '-5px')};
+    top: ${({ isAppNavigationPanelInView }) => (isAppNavigationPanelInView ? 0 : '-10px')};
     display: flex;
     justify-content: flex-end;
 `;

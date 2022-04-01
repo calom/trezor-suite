@@ -7,7 +7,7 @@ import { Translation } from '@suite-components';
 
 const VersionTooltip = styled(Tooltip)`
     display: inline-flex;
-    margin: 0 4px;
+    margin-left: 10px;
 `;
 
 const VersionButton = styled(Button)<{ isDev?: boolean }>`

@@ -22,7 +22,7 @@ import { QuestionTooltip } from './QuestionTooltip';
 import TransactionsGraph from './TransactionsGraph';
 
 import DeviceInvalidModeLayout from './DeviceInvalidModeLayout';
-import AppNavigationPanel from './AppNavigationPanel';
+import { AppNavigationPanel } from './AppNavigationPanel';
 import AppNavigation from './AppNavigation';
 import Ticker from './Ticker';
 import { Translation } from './Translation';

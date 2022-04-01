@@ -18,7 +18,7 @@ import { MAX_WIDTH, MAX_WIDTH_WALLET_CONTENT } from '@suite-constants/layout';
 const { FONT_WEIGHT, FONT_SIZE } = variables;
 
 const SECONDARY_MENU_BUTTON_MARGIN = '12px';
-export const SECONDARY_PANEL_HEIGHT = '71px';
+export const SECONDARY_PANEL_HEIGHT = '60px';
 
 const Wrapper = styled.div<{ subRoute: boolean | undefined; inView?: boolean }>`
     width: 100%;
@@ -36,7 +36,7 @@ const Wrapper = styled.div<{ subRoute: boolean | undefined; inView?: boolean }>`
     ${props =>
         !props.subRoute &&
         css`
-            margin-bottom: 70px;
+            margin-bottom: ${SECONDARY_PANEL_HEIGHT};
         `}
 
     ${props =>
@@ -83,11 +83,11 @@ const KeepWidth = styled.div<{ maxWidth?: string; inView?: boolean }>`
     width: 100%;
     max-width: ${props => (props.maxWidth === 'default' ? MAX_WIDTH : MAX_WIDTH_WALLET_CONTENT)};
 
-    ${props =>
+    /* ${props =>
         props.inView &&
         css`
             border-top: 1px solid ${props => props.theme.STROKE_GREY};
-        `}
+        `} */
 `;
 
 const Primary = styled.div`
@@ -110,28 +110,32 @@ const SecondaryMenu = styled.div<{ visible: boolean }>`
     }
 `;
 
-const StyledNavLink = styled.div<{ active?: boolean }>`
-    cursor: ${({ active }) => !active && 'pointer'};
+const MenuElement = styled.div<{ active?: boolean }>`
+    position: relative;
+    height: ${SECONDARY_PANEL_HEIGHT};
     font-size: ${FONT_SIZE.NORMAL};
     color: ${props =>
         props.active ? props => props.theme.TYPE_DARK_GREY : props => props.theme.TYPE_LIGHT_GREY};
     font-weight: ${FONT_WEIGHT.MEDIUM};
     display: flex;
     align-items: center;
-    padding: 23px 0;
     white-space: nowrap;
     border-bottom: 2px solid
         ${props => (props.active ? props => props.theme.TYPE_DARK_GREY : 'transparent')};
-    margin-right: 40px;
+    margin-right: 20px;
 
-    &:first-child {
+    :first-child {
         margin-left: 5px;
     }
-    position: relative;
 
     @media (max-width: ${variables.SCREEN_SIZE.SM}) {
         margin-right: 15px;
     }
+`;
+
+const StyledNavLink = styled.div<{ active?: boolean }>`
+    padding: 9px 12px;
+    cursor: ${({ active }) => !active && 'pointer'};
 `;
 
 const InnerWrap = styled.div`
@@ -267,34 +271,35 @@ const AppNavigation = ({ items, primaryContent, maxWidth, inView }: Props) => {
                                 itemsPrimary.map(item => {
                                     const { id, title } = item;
                                     const active = isRouteActive(routeName, id);
-                                    return (
-                                        <StyledNavLink
-                                            key={id}
-                                            active={active}
-                                            onClick={item.callback}
-                                            {...(item['data-test'] && {
-                                                'data-test': item['data-test'],
-                                            })}
-                                        >
-                                            <HoverAnimation isHoverable={!active}>
-                                                {item.icon && (
-                                                    <IconWrapper>
-                                                        <StyledIcon
-                                                            size={18}
-                                                            icon={item.icon}
-                                                            color={
-                                                                active
-                                                                    ? theme.TYPE_DARK_GREY
-                                                                    : undefined
-                                                            }
-                                                        />
-                                                    </IconWrapper>
-                                                )}
 
-                                                <Text>{title}</Text>
-                                                <RightContent>{item.rightContent}</RightContent>
+                                    return (
+                                        <MenuElement key={id} active={active}>
+                                            <HoverAnimation isHoverable={!active}>
+                                                <StyledNavLink
+                                                    onClick={item.callback}
+                                                    {...(item['data-test'] && {
+                                                        'data-test': item['data-test'],
+                                                    })}
+                                                >
+                                                    {item.icon && (
+                                                        <IconWrapper>
+                                                            <StyledIcon
+                                                                size={18}
+                                                                icon={item.icon}
+                                                                color={
+                                                                    active
+                                                                        ? theme.TYPE_DARK_GREY
+                                                                        : undefined
+                                                                }
+                                                            />
+                                                        </IconWrapper>
+                                                    )}
+
+                                                    <Text>{title}</Text>
+                                                    <RightContent>{item.rightContent}</RightContent>
+                                                </StyledNavLink>
                                             </HoverAnimation>
-                                        </StyledNavLink>
+                                        </MenuElement>
                                     );
                                 })}
                         </Primary>

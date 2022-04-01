@@ -8,14 +8,20 @@ import StatusLight from '@suite-components/StatusLight';
 
 type Status = 'connected' | 'disconnected' | 'warning';
 
-const getStatusColor = (status: Status, theme: SuiteThemeColors) => {
+const getStatusColor = (status: Status, theme: SuiteThemeColors, isBackground?: boolean) => {
+    const statusBackgroundColors = {
+        connected: theme.BG_LIGHT_GREEN,
+        disconnected: theme.BG_LIGHT_RED,
+        warning: theme.TYPE_LIGHT_ORANGE,
+    };
+
     const statusColors = {
         connected: theme.TYPE_GREEN,
         disconnected: theme.TYPE_RED,
         warning: theme.TYPE_ORANGE,
     };
 
-    return statusColors[status];
+    return isBackground ? statusBackgroundColors[status] : statusColors[status];
 };
 
 const getStatusForDevice = (device: TrezorDevice) => {
@@ -45,21 +51,21 @@ const getTextForStatus = (status: 'connected' | 'disconnected' | 'warning') => {
 
 const StatusText = styled.div<{ show: boolean; status: Status }>`
     position: absolute;
-    text-transform: uppercase;
-    font-weight: ${variables.FONT_WEIGHT.DEMI_BOLD};
-    font-size: ${variables.FONT_SIZE.TINY};
-    top: 14px;
-    color: ${props => getStatusColor(props.status, props.theme)};
+    top: 5px;
+    right: ${({ show }) => (show ? '6px' : '-10px')};
+    padding: 3px 6px 2px 24px;
+    border-radius: 6px;
     background: linear-gradient(
         90deg,
-        ${props => `${props.theme.BG_LIGHT_GREY}00`} 0%,
-        ${props => props.theme.BG_LIGHT_GREY} 20px,
-        ${props => props.theme.BG_LIGHT_GREY} 100%
+        ${({ theme, status }) => `${getStatusColor(status, theme, true)}00`} 0%,
+        ${({ theme, status }) => getStatusColor(status, theme, true)} 20px,
+        ${({ theme, status }) => getStatusColor(status, theme, true)} 100%
     );
-
-    padding-left: 24px;
-    opacity: ${props => (props.show ? 1 : 0)};
-    right: ${props => (props.show ? '12px' : '4px')};
+    font-weight: ${variables.FONT_WEIGHT.DEMI_BOLD};
+    font-size: ${variables.FONT_SIZE.TINY};
+    color: ${({ status, theme }) => getStatusColor(status, theme)};
+    text-transform: uppercase;
+    opacity: ${({ show }) => (show ? 1 : 0)};
     transition: opacity 0.5s ease, right 0.5s ease;
 `;
 
@@ -70,28 +76,31 @@ const IconWrapper = styled.div`
 `;
 
 const StyledStatusLight = styled(StatusLight)<{ show: boolean }>`
-    position: absolute;
     top: 12px;
-    opacity: ${props => (props.show ? 1 : 0)};
-    right: ${props => (props.show ? '12px' : '48px')};
+    right: ${({ show }) => (show ? '12px' : '48px')};
+    opacity: ${({ show }) => (show ? 1 : 0)};
     transition: opacity 0.5s ease, right 0.5s ease;
 `;
 
-interface Props {
+interface DeviceStatusProps {
     device: TrezorDevice;
     onRefreshClick?: () => void;
-    showIconStatus?: boolean;
     showTextStatus?: boolean;
 }
 
-const DeviceStatus = ({
+export const DeviceStatus: React.FC<DeviceStatusProps> = ({
     device,
     onRefreshClick,
-    showIconStatus = true,
     showTextStatus = false,
-}: Props) => {
+}) => {
     const status = getStatusForDevice(device);
     const theme = useTheme();
+
+    const lightStatuses = {
+        connected: 'ok',
+        disconnected: 'error',
+        warning: 'warning',
+    } as const;
 
     // if device needs attention and CTA func was passed show refresh button
     if (status === 'warning' && onRefreshClick) {
@@ -110,23 +119,14 @@ const DeviceStatus = ({
         );
     }
 
-    const lightStatus = (
-        {
-            connected: 'ok',
-            disconnected: 'error',
-            warning: 'warning',
-        } as const
-    )[status];
-
     // otherwise show dot icon (green/orange/red)
     return (
         <>
             <StatusText status={status} show={showTextStatus}>
                 {getTextForStatus(status)}
             </StatusText>
-            <StyledStatusLight status={lightStatus} show={showIconStatus} />
+
+            <StyledStatusLight status={lightStatuses[status]} show={!showTextStatus} />
         </>
     );
 };
-
-export default DeviceStatus;

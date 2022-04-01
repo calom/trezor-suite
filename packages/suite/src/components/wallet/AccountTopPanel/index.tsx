@@ -45,7 +45,7 @@ const AccountTopPanelSkeleton = (props: { animate?: boolean }) => (
     </AppNavigationPanel>
 );
 
-const AccountTopPanel = () => {
+export const AccountTopPanel: React.FC = () => {
     const selectedAccount = useSelector(state => state.wallet.selectedAccount);
     if (selectedAccount.status !== 'loaded')
         return <AccountTopPanelSkeleton animate={selectedAccount.loader === 'account-loading'} />;
@@ -90,5 +90,3 @@ const AccountTopPanel = () => {
         </AppNavigationPanel>
     );
 };
-
-export default AccountTopPanel;

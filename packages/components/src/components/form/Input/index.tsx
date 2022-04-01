@@ -1,23 +1,10 @@
 import * as React from 'react';
 import styled, { css } from 'styled-components';
 import { variables } from '../../../config';
-import { InputState, InputVariant } from '../../../support/types';
+import { InputState } from '../../../support/types';
 import { Icon } from '../../Icon';
 import { getStateColor, useTheme } from '../../../utils';
 import { useEffect, createRef } from 'react';
-
-const getInputHeight = (variant?: InputVariant) => {
-    switch (variant) {
-        case 'small':
-            return 32;
-        case 'medium':
-            return 42;
-        case 'large':
-            return 48;
-        default:
-            return 48;
-    }
-};
 
 const Wrapper = styled.div<Pick<Props, 'width'>>`
     display: inline-flex;
@@ -46,39 +33,38 @@ const StyledInput = styled.input<InputProps>`
     outline: none;
     box-sizing: border-box;
     width: 100%;
-    height: ${props => `${getInputHeight(props.variant)}px`};
+    height: 48px;
     color: ${props => getStateColor(props.state, props.theme)};
 
-    &:read-only {
+    :read-only {
         background: ${props => props.theme.BG_LIGHT_GREY};
         box-shadow: none;
         color: ${props => props.theme.TYPE_DARK_GREY};
     }
 
-    &::placeholder {
+    ::placeholder {
         color: ${props => props.theme.TYPE_LIGHT_GREY};
     }
 
-    ${props =>
-        props.monospace &&
+    ${({ monospace }) =>
+        monospace &&
         css`
             font-variant-numeric: slashed-zero tabular-nums;
         `}
 
-    /* TODO: padding for left input addon */
-    ${props =>
-        props.inputAddonWidth &&
-        !props.textIndent &&
+    ${({ inputAddonWidth, textIndent }) =>
+        inputAddonWidth &&
+        !textIndent &&
         css`
-            padding-right: ${props.inputAddonWidth}px;
+            padding-right: ${inputAddonWidth}px;
         `};
 
-    ${props =>
-        props.disabled &&
+    ${({ theme, disabled }) =>
+        disabled &&
         css`
-            background: ${props => props.theme.BG_GREY};
+            background: ${props => theme.BG_GREY};
             box-shadow: none;
-            color: ${props => props.theme.TYPE_DARK_GREY};
+            color: ${props => theme.TYPE_DARK_GREY};
             cursor: default;
         `}
 `;
@@ -88,20 +74,20 @@ const InputWrapper = styled.div`
     position: relative;
 `;
 
-const Label = styled.div`
+const LabelContainer = styled.div`
     display: flex;
     min-height: 32px;
     justify-content: space-between;
 `;
 
-const Left = styled.div`
-    font-size: ${variables.FONT_SIZE.NORMAL};
+const LeftLabel = styled.div`
+    font-size: ${variables.FONT_SIZE.SMALL};
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
-    padding: 0 0 12px 0;
-    color: ${props => props.theme.TYPE_DARK_GREY};
+    margin-bottom: 8px;
+    color: ${({ theme }) => theme.TYPE_LIGHT_GREY};
 `;
 
-const Right = styled.div`
+const RightLabel = styled.div`
     display: flex;
 `;
 
@@ -118,14 +104,14 @@ const InputAddon = styled.div<{ align: 'left' | 'right' }>`
     display: flex;
     align-items: center;
 
-    ${props =>
-        props.align === 'right' &&
+    ${({ align }) =>
+        align === 'right' &&
         css`
             right: 10px;
         `}
 
-    ${props =>
-        props.align === 'left' &&
+    ${({ align }) =>
+        align === 'left' &&
         css`
             left: 10px;
         `}
@@ -134,16 +120,16 @@ const InputAddon = styled.div<{ align: 'left' | 'right' }>`
 const BottomText = styled.div<Props>`
     display: flex;
     font-size: ${variables.FONT_SIZE.TINY};
-    color: ${props => getStateColor(props.state, props.theme)};
-    ${props =>
-        props.errorPosition === 'right' &&
+    color: ${({ state, theme }) => getStateColor(state, theme)};
+    ${({ errorPosition }) =>
+        errorPosition === 'right' &&
         css`
             align-items: flex-end;
             margin-bottom: 4px;
             margin-left: 12px;
         `}
-    ${props =>
-        props.errorPosition === 'bottom' &&
+    ${({ errorPosition }) =>
+        errorPosition === 'bottom' &&
         css`
             padding: 10px 10px 0 10px;
             min-height: 27px;
@@ -165,8 +151,8 @@ const Overlay = styled.div<Props>`
 const Row = styled.div<Props>`
     display: flex;
     flex-direction: column;
-    ${props =>
-        props.errorPosition === 'right' &&
+    ${({ errorPosition }) =>
+        errorPosition === 'right' &&
         css`
             flex-direction: row;
         `}
@@ -175,7 +161,6 @@ const Row = styled.div<Props>`
 interface Props extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'width'> {
     value?: string;
     innerRef?: React.Ref<HTMLInputElement>;
-    variant?: InputVariant;
     label?: React.ReactElement | string;
     labelAddon?: React.ReactElement;
     labelRight?: React.ReactElement;
@@ -212,7 +197,6 @@ const Input = ({
     type = 'text',
     innerRef,
     state,
-    variant = 'large',
     width,
     label,
     labelAddon,
@@ -238,7 +222,7 @@ const Input = ({
     noTopLabel = false,
     textIndent,
     borderWidth = 2,
-    borderRadius = 4,
+    borderRadius = 8,
     ...rest
 }: Props) => {
     const [isHovered, setIsHovered] = React.useState(false);
@@ -264,14 +248,14 @@ const Input = ({
             onMouseLeave={() => setIsHovered(false)}
         >
             {!noTopLabel && (
-                <Label>
-                    <Left>{label}</Left>
-                    <Right>
+                <LabelContainer>
+                    <LeftLabel>{label}</LeftLabel>
+                    <RightLabel>
                         {labelAddonIsVisible && <LabelAddon>{labelAddon}</LabelAddon>}
                         {isHovered && !labelAddonIsVisible && <LabelAddon>{labelAddon}</LabelAddon>}
                         {labelRight && <VisibleRightLabel>{labelRight}</VisibleRightLabel>}
-                    </Right>
-                </Label>
+                    </RightLabel>
+                </LabelContainer>
             )}
             <Row errorPosition={errorPosition}>
                 <InputWrapper>
@@ -308,7 +292,6 @@ const Input = ({
                         autoCapitalize={autoCapitalize}
                         spellCheck={false}
                         state={state}
-                        variant={variant}
                         disabled={isDisabled}
                         monospace={monospace}
                         ref={innerRef}

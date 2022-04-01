@@ -4,7 +4,7 @@ import Card from '@suite-components/Card';
 import { variables, P } from '@trezor/components';
 
 const Wrapper = styled.div`
-    margin-bottom: 36px;
+    margin-bottom: 40px;
 `;
 
 const Header = styled.div`
@@ -27,24 +27,27 @@ const Content = styled(Card)`
     flex-direction: column;
 `;
 
-interface Props {
-    children: React.ReactNode;
+interface SettingsSectionProps {
     customHeader?: ReactNode | ReactElement;
     title?: string | ReactElement;
     description?: string | ReactElement;
 }
 
-const Section = ({ children, title, description, customHeader }: Props) => (
+export const SettingsSection: React.FC<SettingsSectionProps> = ({
+    children,
+    title,
+    description,
+    customHeader,
+}) => (
     <Wrapper>
         <Header>
             {!title && customHeader}
             {title && !customHeader && <Title>{title}</Title>}
             {description && !customHeader && <Description size="tiny">{description}</Description>}
         </Header>
+
         <Content largePadding noVerticalPadding noPadding>
             {children}
         </Content>
     </Wrapper>
 );
-
-export default Section;

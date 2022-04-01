@@ -7,58 +7,51 @@ const Wrapper = styled.div<{ size?: string; isHoverable?: boolean }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    &:after {
+
+    :after {
         content: '';
         position: absolute;
-        top: -4px;
-        left: -4px;
-        right: -4px;
-        bottom: -4px;
-        z-index: 1;
+        width: 100%;
+        height: 100%;
+        transform: scale(0.5);
         border-radius: 8px;
         transition: ${props =>
             `all ${props.theme.HOVER_TRANSITION_TIME} ${props.theme.HOVER_TRANSITION_EFFECT}`};
 
         background-color: transparent;
         pointer-events: none;
+        z-index: 1;
     }
 
     ${props =>
         props.isHoverable &&
         css`
-            &:hover,
-            &:focus,
-            &:active {
-                &:after {
+            :hover,
+            :focus,
+            :active {
+                :after {
+                    transform: scale(1);
                     background-color: ${props =>
                         transparentize(
                             props.theme.HOVER_TRANSPARENTIZE_FILTER,
                             props.theme.HOVER_PRIMER_COLOR,
                         )};
-                    ${props.size === 'tiny'
-                        ? css`
-                              top: -8px;
-                              left: -8px;
-                              bottom: -8px;
-                              right: -8px;
-                          `
-                        : css`
-                              top: -12px;
-                              left: -12px;
-                              bottom: -12px;
-                              right: -12px;
-                          `}
                 }
             }
         `}
 `;
 
-const HoverAnimation: React.FC<{ size?: string; isHoverable?: boolean }> = ({
-    children,
-    size,
+interface HoverAnimationProps {
+    isHoverable?: boolean;
+    className?: string;
+}
+
+const HoverAnimation: React.FC<HoverAnimationProps> = ({
     isHoverable = true,
+    className,
+    children,
 }) => (
-    <Wrapper size={size} isHoverable={isHoverable}>
+    <Wrapper isHoverable={isHoverable} className={className}>
         {children}
     </Wrapper>
 );

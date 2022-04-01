@@ -3,7 +3,7 @@ import styled, { useTheme, css } from 'styled-components';
 import Truncate from 'react-truncate';
 import { Translation, TrezorLink } from '@suite-components';
 import { Section } from '@dashboard-components';
-import { Button, variables } from '@trezor/components';
+import { Button, Card, variables } from '@trezor/components';
 import { useExternalLink } from '@suite-hooks';
 import { useFetchNews } from '@dashboard-hooks/useNews';
 import { BLOG_URL } from '@suite-constants/urls';
@@ -32,18 +32,14 @@ const Content = styled.div`
     flex-direction: column;
 `;
 
-const Post = styled(TrezorLink)`
-    display: flex;
+const Post = styled(Card)`
     padding: 6px;
-    flex-direction: column;
-    background: ${props => props.theme.BG_WHITE};
-    border-radius: 3px;
 `;
 
 const Image = styled.img`
     width: 100%;
     height: 195px;
-    border-radius: 3px;
+    border-radius: 8px;
     object-fit: cover;
 
     ${props =>
@@ -88,27 +84,29 @@ const PostComponent = (props: PostComponentProps) => {
     const thumbnail = useExternalLink(props.thumbnail);
 
     return (
-        <Post href={url} data-test={props['data-test']} variant="nostyle">
-            <Image src={thumbnail} />
-            <Content>
-                <Title>
-                    <Truncate lines={2}>{props.title}</Truncate>
-                </Title>
-                <Description>
-                    <Truncate lines={3}>{props.description}</Truncate>
-                </Description>
-                <ReadMore>
-                    <Button
-                        variant="tertiary"
-                        alignIcon="right"
-                        color={props.theme.TYPE_DARK_GREY}
-                        icon="EXTERNAL_LINK"
-                    >
-                        <Translation id="TR_READ_MORE" />
-                    </Button>
-                </ReadMore>
-            </Content>
-        </Post>
+        <TrezorLink href={url} data-test={props['data-test']} variant="nostyle">
+            <Post>
+                <Image src={thumbnail} />
+                <Content>
+                    <Title>
+                        <Truncate lines={2}>{props.title}</Truncate>
+                    </Title>
+                    <Description>
+                        <Truncate lines={3}>{props.description}</Truncate>
+                    </Description>
+                    <ReadMore>
+                        <Button
+                            variant="tertiary"
+                            alignIcon="right"
+                            color={props.theme.TYPE_DARK_GREY}
+                            icon="EXTERNAL_LINK"
+                        >
+                            <Translation id="TR_READ_MORE" />
+                        </Button>
+                    </ReadMore>
+                </Content>
+            </Post>
+        </TrezorLink>
     );
 };
 

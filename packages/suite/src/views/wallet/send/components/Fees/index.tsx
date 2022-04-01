@@ -8,7 +8,7 @@ import { useSendFormContext } from '@wallet-hooks';
 
 const StyledCard = styled(Card)`
     display: flex;
-    margin-bottom: 25px;
+    margin-bottom: 8px;
     padding: 32px 42px;
 
     @media (max-width: ${variables.SCREEN_SIZE.SM}) {
