@@ -1,98 +1,135 @@
 import UAParser from 'ua-parser-js';
 
 import style from './styles.css';
-import iconChrome from './images/browser-chrome.png';
-import iconFirefox from './images/browser-firefox.png';
+import iconChrome from '../../files/images/browsers/chrome@2.png';
+import iconFirefox from '../../files/images/browsers/firefox@2.png';
+import iconDesktop from '../../files/images/browsers/desktop@2.png';
 
 type SupportedBrowser = {
     name: string;
     url: string;
     icon: string;
+    preferred: boolean;
 };
 
 type MainHtmlProps = {
     title: string;
     subtitle: string;
-    button?: string;
-    url?: string;
+    continueToSuite?: boolean;
+    supportedDevicesList?: boolean;
     supportedBrowsers?: SupportedBrowser[];
 };
 
 window.addEventListener('load', () => {
-    const getButtonPartial = (props: MainHtmlProps) =>
-        props.button && props.url
-            ? `<a href="${props.url}" target="_blank" class="${style.button}" rel="noopener noreferrer">${props.button}</a>`
-            : ``;
-
     const getSupportedBrowsersPartial = (supportedBrowsers?: SupportedBrowser[]) =>
         supportedBrowsers
             ? `<div class="${style.browsers}">
             ${supportedBrowsers
                 .map(
                     (item: SupportedBrowser) => `
-                <div class="${style.browser}">
-                    <img src="${item.icon}" height="56px" />
-                    <div class="${style.download}">
-                        <a href="${item.url}" target="_blank" class="${style.button}" rel="noopener noreferrer">
-                            Get ${item.name}
-                        </a>
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="${
+                        style.browser
+                    }">
+                    <img src="${item.icon}" class="${style.image}"/>
+                    <p class="${style.name}">${item.name}</p>
+                    <div class="${style.button} ${
+                        item.preferred ? style.buttonPrimary : style.buttonSecondary
+                    }">
+                        Download
                     </div>
-                </div>`,
+                </a>`,
                 )
                 .join('')}
         </div>`
-            : ``;
+            : '';
+
+    const getSupportedDevicesList = (props: MainHtmlProps) =>
+        props.supportedDevicesList
+            ? `<ul class=${style.list}>
+                <li>Desktop apps</li>
+                <li>Computer browser app</li>
+                <li>Android browser app</li>
+            </ul>`
+            : '';
+
+    const getContinueToSuiteInfo = (props: MainHtmlProps) =>
+        props.continueToSuite
+            ? `<div class=${style.hr}></div>
+                <p class=${style.continueInfo}>You can try using it with this browser, however, you might experience bugs & shit</p>
+                <p class=${style.continueButton} id="continue-to-suite">Continue at my own risk</p>`
+            : '';
 
     const getMainHtml = (props: MainHtmlProps) => `
-    <div class="${style.container}" data-test="@browser-detect">
+    <div id="unsupported-browser" class="${style.container}" data-test="@browser-detect">
         <h1 class="${style.title}">${props.title}</h1>
         <p class="${style.subtitle}">${props.subtitle}</p>
-        ${getButtonPartial(props)}
+        ${getSupportedDevicesList(props)}
         ${getSupportedBrowsersPartial(props.supportedBrowsers)}
+        ${getContinueToSuiteInfo(props)}
     </div>
     `;
 
+    const desktop = {
+        name: 'Desktop App',
+        url: 'https://suite.trezor.io/',
+        icon: iconDesktop,
+        preferred: true,
+    };
+
+    const chrome = {
+        name: 'Chrome 84+',
+        url: 'https://www.google.com/chrome/',
+        icon: iconChrome,
+        preferred: false,
+    };
+
+    const firefox = {
+        name: 'Firefox 78+',
+        url: 'https://www.mozilla.org/firefox/new/',
+        icon: iconFirefox,
+        preferred: false,
+    };
+
+    const chromeMobile = {
+        name: 'Chrome for Android',
+        url: 'https://play.google.com/store/apps/details?id=com.android.chrome',
+        icon: iconChrome,
+        preferred: false,
+    };
+
     const unsupportedBrowser = getMainHtml({
         title: 'Your browser is not supported',
-        subtitle: 'Please choose one of the supported browsers',
-        supportedBrowsers: [
-            {
-                name: 'Chrome',
-                url: 'https://www.google.com/chrome/',
-                icon: iconChrome,
-            },
-            {
-                name: 'Firefox',
-                url: 'https://www.mozilla.org/firefox/new/',
-                icon: iconFirefox,
-            },
-        ],
+        subtitle: 'Get our app, or download a supported browser',
+        supportedBrowsers: [desktop, chrome, firefox],
+        continueToSuite: true,
     });
 
     const updateChrome = getMainHtml({
         title: 'Your browser is outdated',
-        subtitle: 'Please update your browser to the latest version.',
-        button: 'Update Chrome',
-        url: 'https://support.google.com/chrome/answer/95414',
+        subtitle: 'Get our app, or update your browser to the latest version.',
+        supportedBrowsers: [desktop, chrome],
+        continueToSuite: true,
     });
 
     const updateFirefox = getMainHtml({
         title: 'Your browser is outdated',
-        subtitle: 'Please update your browser to the latest version.',
-        button: 'Update Firefox',
-        url: 'https://support.mozilla.org/en-US/kb/update-firefox-latest-release',
+        subtitle: 'Get our app, or update your browser to the latest version.',
+        supportedBrowsers: [desktop, firefox],
+        continueToSuite: true,
     });
 
     const getChromeAndroid = getMainHtml({
-        title: 'Get Chrome for Android',
-        subtitle: 'WebUSB is only supported on Chrome for Android.',
-        button: 'Get Chrome for Android',
-        url: 'https://play.google.com/store/apps/details?id=com.android.chrome',
+        title: 'Your browser is not supported',
+        subtitle: 'Mobile Suite is supported only in Chrome for Android.',
+        supportedBrowsers: [chromeMobile],
+        continueToSuite: true,
     });
 
-    const noWebUSB = getMainHtml({
-        title: 'No WebUSB support',
-        subtitle: 'WebUSB is only supported on Chrome for Android.',
+    const iOS = getMainHtml({
+        title: 'Suite doesn’t work on iOS yet',
+        subtitle:
+            'We’re working hard to figure something out.<br> In the meantime you can use Suite:',
+        supportedDevicesList: true,
     });
 
     // this should match browserslist config (packages/suite-build/browserslist)
@@ -126,19 +163,32 @@ window.addEventListener('load', () => {
             ? supportedBrowser.version > parseInt(result.browser.version, 10)
             : false;
 
+    const goToSuite = () => {
+        const child = document.getElementById('unsupported-browser');
+        child?.parentNode?.removeChild(child);
+
+        const appDiv = document.createElement('div');
+        appDiv.id = 'app';
+        document.body.appendChild(appDiv);
+    };
+
     const setBody = (content: string) => {
         document.body.innerHTML = '';
         document.body.insertAdjacentHTML('afterbegin', content);
+
+        document.getElementById('continue-to-suite')?.addEventListener('click', goToSuite);
     };
 
     if (result.os.name === 'iOS') {
         // Any iOS device: no WebUSB support (suggest to download iOS app?)
-        setBody(noWebUSB);
+        setBody(iOS);
     } else if (isMobile && (!supportedBrowser || (supportedBrowser && !supportedBrowser.mobile))) {
         // Unsupported mobile browser: get Chrome for Android
         setBody(getChromeAndroid);
+    } else if (!supportedBrowser) {
+        // Unsupported browser
+        setBody(unsupportedBrowser);
     } else if (updateRequired) {
-        if (!supportedBrowser) return;
         if (supportedBrowser.name === 'Chrome' || supportedBrowser.name === 'Chromium') {
             // Outdated browser: update Chrome
             setBody(updateChrome);
@@ -147,13 +197,8 @@ window.addEventListener('load', () => {
             // Outdated browser: update Firefox
             setBody(updateFirefox);
         }
-    } else if (!supportedBrowser) {
-        // Unsupported browser
-        setBody(unsupportedBrowser);
     } else {
         // Inject app div
-        const appDiv = document.createElement('div');
-        appDiv.id = 'app';
-        document.body.appendChild(appDiv);
+        goToSuite();
     }
 });
