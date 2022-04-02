@@ -1,0 +1,34 @@
+{
+    "name": "@trezor/connect-popup",
+    "version": "9.0.0-beta.1",
+    "author": "Trezor <info@trezor.io>",
+    "homepage": "https://github.com/trezor/trezor-suite/packages/connect",
+    "description": "High-level javascript interface for Trezor hardware wallet.",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/trezor/trezor-suite.git"
+    },
+    "bugs": {
+        "url": "https://github.com/trezor/trezor-suite/issues"
+    },
+    "keywords": [
+        "Trezor",
+        "trezor-connect",
+        "javascript"
+    ],
+    "sideEffects": false,
+    "main": "lib/index",
+    "files": [
+        "lib/",
+        "!**/*.map"
+    ],
+    "scripts": {
+        "lint": "eslint '**/*.{ts,tsx,js}'",
+        "type-check": "tsc --build",
+        "build": "rimraf build && webpack --config ./webpack/prod.webpack.config.js"
+    },
+    "dependencies": {
+        "@trezor/connect": "9.0.0-beta.1"
+    }
+}
