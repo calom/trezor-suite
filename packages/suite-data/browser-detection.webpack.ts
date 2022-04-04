@@ -8,20 +8,19 @@ module.exports = {
         path: path.resolve(__dirname, 'files/browser-detection'),
         filename: 'index.js',
     },
-    devtool: 'source-map',
+    devtool: 'nosources-source-map',
     module: {
         rules: [
             {
                 test: /\.ts$/,
                 exclude: /node_modules/,
-                use: [
-                    {
-                        loader: 'ts-loader',
-                        options: {
-                            transpileOnly: true,
-                        },
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env', '@babel/preset-typescript'],
+                        plugins: ['babel-plugin-remove-template-literals-whitespace'],
                     },
-                ],
+                },
             },
             {
                 test: /\.css$/,
