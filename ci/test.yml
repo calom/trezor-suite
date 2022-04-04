@@ -275,6 +275,8 @@ e2e connect-iframe karma:
     - yarn install --pure-lockfile --cache-folder .yarn --prefer-offline
     - yarn build:libs
     - cp -r ./packages/connect-iframe/build ./packages/integration-tests/projects/connect-iframe
+    - cp -r ./packages/connect-web/build ./packages/integration-tests/projects/connect-iframe
+    - ls -la ./packages/integration-tests/projects/connect-iframe
     - docker-compose pull
     - docker-compose up -d trezor-user-env-unix
     - docker-compose run test-run

@@ -2,9 +2,10 @@
 
 import TrezorConnect from 'trezor-connect';
 import * as versionUtils from '@trezor/utils/src/versionUtils'; // NOTE: only this module is required
-import * as UI from '@trezor/connect/src/events'; // NOTE: import UI constants directly from source
+import { UI } from '@trezor/connect';
 import releases1 from '@trezor/connect-common/files/firmware/1/releases.json';
 import releases2 from '@trezor/connect-common/files/firmware/2/releases.json';
+import { HD_HARDENED, toHardened } from '@trezor/connect/lib/utils/pathUtils';
 import { Controller } from '../../websocket-client';
 
 const MNEMONICS = {
@@ -219,10 +220,6 @@ global.Trezor = {
     conditionalTest,
     initTrezorConnect,
 };
-
-// picked from utils/pathUtils
-const HD_HARDENED = 0x80000000;
-const toHardened = n => (n | HD_HARDENED) >>> 0;
 
 const ADDRESS_N = path => {
     const parts = path.toLowerCase().split('/');
