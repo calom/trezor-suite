@@ -1,15 +1,16 @@
 import UAParser from 'ua-parser-js';
 
 import style from './styles.css';
-import iconChrome from '../../files/images/browsers/chrome@2.png';
-import iconFirefox from '../../files/images/browsers/firefox@2.png';
-import iconDesktop from '../../files/images/browsers/desktop@2.png';
+import iconChrome from '../../files/images/browsers/chrome@2x.png';
+import iconFirefox from '../../files/images/browsers/firefox@2x.png';
+import iconDesktop from '../../files/images/browsers/desktop@2x.png';
 
 type SupportedBrowser = {
     name: string;
-    url: string;
+    urlDownload: string;
+    urlUpdate?: string;
     icon: string;
-    preferred: boolean;
+    isPreferred: boolean;
 };
 
 type MainHtmlProps = {
@@ -18,24 +19,24 @@ type MainHtmlProps = {
     continueToSuite?: boolean;
     supportedDevicesList?: boolean;
     supportedBrowsers?: SupportedBrowser[];
+    shouldUpdate?: boolean;
 };
 
 window.addEventListener('load', () => {
-    const getSupportedBrowsersPartial = (supportedBrowsers?: SupportedBrowser[]) =>
+    const getSupportedBrowsersPartial = ({ supportedBrowsers, shouldUpdate }: MainHtmlProps) =>
         supportedBrowsers
             ? `<div class="${style.browsers}">
             ${supportedBrowsers
                 .map(
                     (item: SupportedBrowser) => `
-                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="${
-                        style.browser
-                    }">
+                <a href="${shouldUpdate && item.urlUpdate ? item.urlUpdate : item.urlDownload}
+                " target="_blank" rel="noopener noreferrer" class="${style.browser}">
                     <img src="${item.icon}" class="${style.image}"/>
                     <p class="${style.name}">${item.name}</p>
                     <div class="${style.button} ${
-                        item.preferred ? style.buttonPrimary : style.buttonSecondary
+                        item.isPreferred ? style.buttonPrimary : style.buttonSecondary
                     }">
-                        Download
+                        ${shouldUpdate && item.urlUpdate ? 'Update' : 'Download'}
                     </div>
                 </a>`,
                 )
@@ -46,16 +47,20 @@ window.addEventListener('load', () => {
     const getSupportedDevicesList = (props: MainHtmlProps) =>
         props.supportedDevicesList
             ? `<ul class=${style.list}>
-                <li>Desktop apps</li>
-                <li>Computer browser app</li>
-                <li>Android browser app</li>
+                <li>Trezor Suite desktop app</li>
+                <li>Trezor Suite for web </li>
+                <li>Mobile web app for Chrome on Android</li>
             </ul>`
             : '';
 
     const getContinueToSuiteInfo = (props: MainHtmlProps) =>
         props.continueToSuite
             ? `<div class=${style.hr}></div>
-                <p class=${style.continueInfo}>You can try using it with this browser, however, you might experience bugs & shit</p>
+                <p class=${style.continueInfo}>
+                Using outdated or unsupported browsers can expose you to security risks.
+                <br>
+                To keep your funds safe, we recommend using the latest version of a supported browser.
+                </p>
                 <p class=${style.continueButton} id="continue-to-suite">Continue at my own risk</p>`
             : '';
 
@@ -64,63 +69,77 @@ window.addEventListener('load', () => {
         <h1 class="${style.title}">${props.title}</h1>
         <p class="${style.subtitle}">${props.subtitle}</p>
         ${getSupportedDevicesList(props)}
-        ${getSupportedBrowsersPartial(props.supportedBrowsers)}
+        ${getSupportedBrowsersPartial(props)}
         ${getContinueToSuiteInfo(props)}
     </div>
     `;
 
     const desktop = {
         name: 'Desktop App',
-        url: 'https://suite.trezor.io/',
+        urlDownload: 'https://suite.trezor.io/',
         icon: iconDesktop,
-        preferred: true,
+        isPreferred: true,
     };
 
     const chrome = {
         name: 'Chrome 84+',
-        url: 'https://www.google.com/chrome/',
+        urlDownload: 'https://www.google.com/chrome/',
+        urlUpdate: 'https://support.google.com/chrome/answer/95414',
         icon: iconChrome,
-        preferred: false,
+        isPreferred: false,
     };
 
     const firefox = {
         name: 'Firefox 78+',
-        url: 'https://www.mozilla.org/firefox/new/',
+        urlDownload: 'https://www.mozilla.org/firefox/new/',
+        urlUpdate: 'https://support.mozilla.org/en-US/kb/update-firefox-latest-release',
         icon: iconFirefox,
-        preferred: false,
+        isPreferred: false,
     };
 
     const chromeMobile = {
         name: 'Chrome for Android',
-        url: 'https://play.google.com/store/apps/details?id=com.android.chrome',
+        urlDownload: 'https://play.google.com/store/apps/details?id=com.android.chrome',
         icon: iconChrome,
-        preferred: false,
+        isPreferred: false,
     };
 
+    const titleUnsupported = 'Your browser is not supported';
+    const titleOutdated = 'Your browser is outdated';
+
+    const primarySubtitle =
+        'We recommend using the Trezor Suite desktop app for the best experience.';
+    const secondarySubtitleDownload =
+        'Alternatively, download a supported browser to use the Trezor Suite web app.';
+    const secondarySubtitleUpdate =
+        'Alternatively, update your web browser to the latest version to use the Trezor Suite web app.';
+
     const unsupportedBrowser = getMainHtml({
-        title: 'Your browser is not supported',
-        subtitle: 'Get our app, or download a supported browser',
+        title: titleUnsupported,
+        subtitle: `${primarySubtitle}<br>${secondarySubtitleDownload}`,
         supportedBrowsers: [desktop, chrome, firefox],
         continueToSuite: true,
     });
 
     const updateChrome = getMainHtml({
-        title: 'Your browser is outdated',
-        subtitle: 'Get our app, or update your browser to the latest version.',
+        title: titleOutdated,
+        subtitle: `${primarySubtitle}<br>${secondarySubtitleUpdate}`,
         supportedBrowsers: [desktop, chrome],
         continueToSuite: true,
+        shouldUpdate: true,
     });
 
     const updateFirefox = getMainHtml({
-        title: 'Your browser is outdated',
-        subtitle: 'Get our app, or update your browser to the latest version.',
+        title: titleOutdated,
+        subtitle: `${primarySubtitle}<br>${secondarySubtitleUpdate}`,
         supportedBrowsers: [desktop, firefox],
         continueToSuite: true,
+        shouldUpdate: true,
     });
 
     const getChromeAndroid = getMainHtml({
-        title: 'Your browser is not supported',
-        subtitle: 'Mobile Suite is supported only in Chrome for Android.',
+        title: titleUnsupported,
+        subtitle: 'The Trezor Suite mobile web app is only supported in Chrome for Android.',
         supportedBrowsers: [chromeMobile],
         continueToSuite: true,
     });
@@ -128,7 +147,7 @@ window.addEventListener('load', () => {
     const iOS = getMainHtml({
         title: 'Suite doesn’t work on iOS yet',
         subtitle:
-            'We’re working hard to figure something out.<br> In the meantime you can use Suite:',
+            'We’re working hard to bring the Trezor Suite mobile web app to iOS. In the meantime, you can use Trezor Suite on the following platforms:',
         supportedDevicesList: true,
     });
 
